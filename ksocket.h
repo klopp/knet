@@ -8,7 +8,7 @@
 #ifndef KSOCKET_H_
 #define KSOCKET_H_
 
-#include "config.h"
+#include "../klib/config.h"
 
 #include <errno.h>
 #include <fcntl.h>
