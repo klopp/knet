@@ -8,6 +8,26 @@
 #include "ksocket.h"
 #include "../stringlib/stringlib.h"
 
+ksocket knet_create_sd(ksocket sd, int timeout)
+{
+    if( !sd )
+    {
+        sd = Malloc( sizeof(struct _ksocket) );
+        if( !sd ) return NULL;
+    }
+    memset( sd, 0, sizeof(struct _ksocket));
+    sd->sock = -1;
+    sd->ssl_error = SSL_ERROR_NONE;
+    sd->timeout = timeout;
+    return sd;
+}
+
+void knet_destroy_sd(ksocket sd)
+{
+    Free(sd);
+}
+
+
 static const char * _knet_ssl_error( int err )
 {
     static char _ssl_err_buf[64];
