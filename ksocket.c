@@ -8,25 +8,24 @@
 #include "ksocket.h"
 #include "../stringlib/stringlib.h"
 
-ksocket knet_create_sd(ksocket sd, int timeout)
+ksocket knet_create_sd( ksocket sd, int timeout )
 {
     if( !sd )
     {
         sd = Malloc( sizeof(struct _ksocket) );
         if( !sd ) return NULL;
     }
-    memset( sd, 0, sizeof(struct _ksocket));
+    memset( sd, 0, sizeof(struct _ksocket) );
     sd->sock = -1;
     sd->ssl_error = SSL_ERROR_NONE;
     sd->timeout = timeout;
     return sd;
 }
 
-void knet_destroy_sd(ksocket sd)
+void knet_destroy_sd( ksocket sd )
 {
-    Free(sd);
+    Free( sd );
 }
-
 
 static const char * _knet_ssl_error( int err )
 {
@@ -256,13 +255,13 @@ int knet_init_ssl( ksocket sd, const SSL_METHOD * method )
         return 0;
     }
     sd->ctx = SSL_CTX_new( method );
-/*
-#ifndef __WINDOWS__
-    sd->ctx = SSL_CTX_new( TLSv1_client_method() );
-#else
-    sd->ctx = SSL_CTX_new(SSLv23_client_method());
-#endif
-*/
+    /*
+     #ifndef __WINDOWS__
+     sd->ctx = SSL_CTX_new( TLSv1_client_method() );
+     #else
+     sd->ctx = SSL_CTX_new(SSLv23_client_method());
+     #endif
+     */
     if( !sd->ctx ) return 0;
     sd->ssl = SSL_new( sd->ctx );
     if( !sd->ssl )
@@ -601,7 +600,8 @@ int knet_read( ksocket sd, char * buf, size_t sz )
             if( _knet_getbuf( sd ) == -1 ) return 0;
         }
         tomove = sz - readed;
-        if( tomove > (size_t)(sd->inbuf - sd->cursor) ) tomove = sd->inbuf - sd->cursor;
+        if( tomove > (size_t)(sd->inbuf - sd->cursor) ) tomove = sd->inbuf
+                - sd->cursor;
         memcpy( buf, sd->buf + sd->cursor, tomove );
         buf += tomove;
         readed += tomove;
