@@ -52,7 +52,7 @@ typedef struct _ksocket
     SSL *ssl;
 }*ksocket;
 
-ksocket knet_create_sd(int timeout);
+ksocket knet_create_sd(ksocket sd, int timeout);
 void knet_destroy_sd(ksocket sd);
 int knet_connect( ksocket sd, const char * host, int port );
 void knet_disconnect( ksocket sd );
