@@ -18,7 +18,7 @@ ksocket knet_create_sd( ksocket sd, int timeout )
     memset( sd, 0, sizeof(struct _ksocket) );
     sd->sock = -1;
     sd->ssl_error = SSL_ERROR_NONE;
-    sd->timeout = timeout;
+    sd->timeout = timeout > 0 ? timeout : KSOCK_DEFAULT_TIMEOUT;
     return sd;
 }
 
@@ -492,7 +492,7 @@ static int _knet_read_ssl( ksocket sd )
                 read_blocked_on_write = 0;
 
                 rc = SSL_read( sd->ssl, sd->buf + readed,
-                SOCK_BUF_LEN - readed );
+                KSOCK_BUF_LEN - readed );
 
                 ssl_err = SSL_get_error( sd->ssl, rc );
                 if( ssl_err == SSL_ERROR_NONE )
@@ -556,7 +556,7 @@ static int _knet_read_socket( ksocket sd )
 
     if( FD_ISSET( sd->sock, &fdread ) )
     {
-        rc = recv( sd->sock, sd->buf, SOCK_BUF_LEN, 0 );
+        rc = recv( sd->sock, sd->buf, KSOCK_BUF_LEN, 0 );
         if( rc == SOCKET_ERROR )
         {
             sd->error = WSAGetLastError();
@@ -573,7 +573,7 @@ static int _knet_getbuf( ksocket sd )
     sd->eof = 0;
     sd->error = 0;
     sd->inbuf = sd->cursor = 0;
-    memset( sd->buf, 0, SOCK_BUF_LEN );
+    memset( sd->buf, 0, KSOCK_BUF_LEN );
     rc = sd->ssl ? _knet_read_ssl( sd ) : _knet_read_socket( sd );
     if( rc == 0 )
     {

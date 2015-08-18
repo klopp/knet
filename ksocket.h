@@ -36,7 +36,8 @@
 #endif
 #endif
 
-#define SOCK_BUF_LEN  (1024*16)
+#define KSOCK_BUF_LEN           (1024*16)
+#define KSOCK_DEFAULT_TIMEOUT   10
 
 typedef struct _ksocket
 {
@@ -47,7 +48,7 @@ typedef struct _ksocket
     int ssl_error;
     int inbuf;
     int cursor;
-    char buf[SOCK_BUF_LEN];
+    char buf[KSOCK_BUF_LEN];
     SSL_CTX *ctx;
     SSL *ssl;
 }*ksocket;
