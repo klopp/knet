@@ -114,7 +114,7 @@ static void _rand_seed( void )
     RAND_seed( &data, sizeof(data) );
 }
 
-static int _knet_init( void )
+int knet_init( void )
 {
 #if defined(__WINDOWS__)
     WSADATA wsaData;
@@ -132,7 +132,7 @@ static int _knet_init( void )
     return 1;
 }
 
-static void _knet_down( void )
+void knet_down( void )
 {
 #if defined(__WINDOWS__)
     WSACleanup();
@@ -152,7 +152,7 @@ int knet_connect( ksocket sd, const char * host, int port )
 
     if( sd->sock >= 0 ) return 1;
     sd->ssl_error = SSL_ERROR_NONE;
-    if( !_knet_init() ) return 0;
+////    if( !_knet_init() ) return 0;
 
     he = gethostbyname( host );
     if( !he )
@@ -332,7 +332,7 @@ void knet_disconnect( ksocket sd )
     sd->sock = -1;
     sd->ssl = NULL;
     sd->ctx = NULL;
-    _knet_down();
+    //_knet_down();
 }
 
 static int _knet_write_socket( ksocket sd, const char * buf, size_t sz )
