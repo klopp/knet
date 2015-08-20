@@ -48,21 +48,30 @@ static int smtp_answer( KSmtp smtp )
     return (buf[0] - '0') * 100 + (buf[1] - '0') * 10 + (buf[2] - '0');
 }
 
-int smtp_write( KSmtp smtp, const char * buf )
+int smtp_write_buf( KSmtp smtp, const void * buf, size_t size )
 {
+/*
+ * TODO
     if( smtp->verbose )
     {
         scpyc( smtp->current, buf );
         schomp( smtp->current );
         fprintf( stderr, ">>> %s\n", sstr( smtp->current ) );
     }
-    knet_write( &smtp->sd, buf, strlen( buf ) );
+*/
+    knet_write( &smtp->sd, buf, size );
     if( smtp->sd.error/*knet_error( &smtp->sd )*/)
     {
         sprint( smtp->error, "smtp_write(): %s", knet_error( &smtp->sd ) );
         return 0;
     }
     return 1;
+}
+
+
+int smtp_write( KSmtp smtp, const char * data )
+{
+    return smtp_write_buf( smtp, data, strlen(data) );
 }
 
 static int smtp_cmd( KSmtp smtp, const char * cmd, int ok, int ko )

@@ -34,6 +34,7 @@ int smtp_AUTH_LOGIN( KSmtp smtp, const char * user, const char * password );
 int smtp_AUTH_PLAIN( KSmtp smtp, const char * user, const char * password );
 int smtp_MAIL_FROM( KSmtp smtp, const char * email );
 int smtp_RCPT_TO( KSmtp smtp, const char *email );
+int smtp_write_buf( KSmtp smtp, const void * data, size_t size );
 int smtp_write( KSmtp smtp, const char * data );
 int smtp_DATA( KSmtp smtp );
 int smtp_END_DATA( KSmtp smtp );
