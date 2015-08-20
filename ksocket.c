@@ -27,6 +27,9 @@ void knet_destroy_sd( ksocket sd )
     Free( sd );
 }
 
+/**
+ * \return SSL error message ( see unix man SSL_get_error)
+ */
 static const char * _knet_ssl_error( int err )
 {
     static char _ssl_err_buf[64];
@@ -70,6 +73,9 @@ static const char * _knet_ssl_error( int err )
     return _ssl_err_buf;
 }
 
+/**
+ * \return message: SSL error if defined, or common socket error
+ */
 const char * knet_error( ksocket sd )
 {
 #if defined(__WINDOWS__)
@@ -143,16 +149,10 @@ int knet_connect( ksocket sd, const char * host, int port )
 {
     struct sockaddr_in sa;
     struct hostent * he;
-    /*
-     struct timeval timeout;
-     fd_set fdwrite, fdexcept;
-     int rc;
-     */
     unsigned long nonblock = 1;
 
     if( sd->sock >= 0 ) return 1;
     sd->ssl_error = SSL_ERROR_NONE;
-////    if( !_knet_init() ) return 0;
 
     he = gethostbyname( host );
     if( !he )
@@ -160,11 +160,6 @@ int knet_connect( ksocket sd, const char * host, int port )
         sd->error = WSAGetLastError();
         return 0;
     }
-
-    /*
-     timeout.tv_sec = sd->timeout;
-     timeout.tv_usec = 0;
-     */
 
     memset( &sa, 0, sizeof(sa) );
     sa.sin_family = PF_INET;
@@ -195,39 +190,6 @@ int knet_connect( ksocket sd, const char * host, int port )
             return 0;
         }
     }
-    /*
-     while( 1 )
-     {
-     FD_ZERO( &fdwrite );
-     FD_ZERO( &fdexcept );
-
-     FD_SET( sd->sock, &fdwrite );
-     FD_SET( sd->sock, &fdexcept );
-
-     if( (rc = select( sd->sock + 1, NULL, &fdwrite, &fdexcept, &timeout ))
-     == SOCKET_ERROR )
-     {
-     sd->error = WSAGetLastError();
-     closesocket( sd->sock );
-     return 0;
-     }
-     if( !rc )
-     {
-     sd->error = ETIME;
-     closesocket( sd->sock );
-     return 0;
-     }
-     if( rc && FD_ISSET( sd->sock, &fdwrite ) ) break;
-     if( rc && FD_ISSET( sd->sock, &fdexcept ) )
-     {
-     sd->error = SOCKET_ERROR;
-     closesocket( sd->sock );
-     return 0;
-     }
-     }
-     FD_CLR( sd->sock, &fdwrite );
-     FD_CLR( sd->sock, &fdexcept );
-     */
 
     return 1;
 }
@@ -444,7 +406,7 @@ static int _knet_write_ssl( ksocket sd, const char * buf, size_t sz )
     }
     return sz - left;
 }
-int knet_write( ksocket sd, const char * buf, size_t len )
+int knet_write( ksocket sd, const void * buf, size_t len )
 {
     return sd->ssl ?
             _knet_write_ssl( sd, buf, len ) : _knet_write_socket( sd, buf, len );

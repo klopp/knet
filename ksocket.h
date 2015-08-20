@@ -62,7 +62,7 @@ int knet_connect( ksocket sd, const char * host, int port );
 void knet_disconnect( ksocket sd );
 
 int knet_read( ksocket sd, char *buf, size_t size );
-int knet_write( ksocket sd, const char *buf, size_t size );
+int knet_write( ksocket sd, const void * buf, size_t size );
 int knet_getc( ksocket sd );
 int knet_init_ssl( ksocket sd, const SSL_METHOD * method );
 const char * knet_error( ksocket sd );
