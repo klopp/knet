@@ -56,9 +56,10 @@ typedef struct _ksocket
 int knet_init( void );
 void knet_down( void );
 
-ksocket knet_create_sd(ksocket sd, int timeout);
-void knet_destroy_sd(ksocket sd);
+ksocket knet_create_sd( ksocket sd, int timeout );
+void knet_destroy_sd( ksocket sd );
 int knet_connect( ksocket sd, const char * host, int port );
+int knet_create_listener( ksocket sd, int port );
 void knet_disconnect( ksocket sd );
 
 int knet_read( ksocket sd, char *buf, size_t size );

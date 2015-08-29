@@ -6,7 +6,7 @@
  */
 
 #include "ksocket.h"
-#include "../stringlib/stringlib.h"
+//#include "../stringlib/stringlib.h"
 
 ksocket knet_create_sd( ksocket sd, int timeout )
 {
@@ -145,6 +145,43 @@ void knet_down( void )
 #endif
 }
 
+int knet_create_listener( ksocket * sd, int port )
+{
+    struct sockaddr_in sin;
+    int optval;
+
+    sd->ssl_error = SSL_ERROR_NONE;
+    memset( &sin.sin_zero, 0, 8 );
+    sin.sin_port = htons( port );
+    sin.sin_family = AF_INET;
+    sin.sin_addr.s_addr = htonl( INADDR_ANY );
+    if( (sd->sock = socket( PF_INET, SOCK_STREAM, 0 )) < 0 )
+    {
+        sd->error = WSAGetLastError();
+        return 0;
+    }
+
+    optval = 1;
+    setsockopt( sd->sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval) );
+
+    if( bind( sd->sock, (struct sockaddr*)&sin, sizeof(struct sockaddr_in) )
+            < 0 )
+    {
+        sd->error = WSAGetLastError();
+        closesocket( sd->sock );
+        sd->sock = -1;
+        return 0;
+    }
+    if( listen( sd->sock, SOMAXCONN ) < 0 )
+    {
+        sd->error = WSAGetLastError();
+        closesocket( sd->sock );
+        sd->sock = -1;
+        return 0;
+    }
+    return 1;
+}
+
 int knet_connect( ksocket sd, const char * host, int port )
 {
     struct sockaddr_in sa;
@@ -178,6 +215,7 @@ int knet_connect( ksocket sd, const char * host, int port )
     {
         sd->error = WSAGetLastError();
         closesocket( sd->sock );
+        sd->sock = -1;
         return 0;
     }
 
@@ -187,6 +225,7 @@ int knet_connect( ksocket sd, const char * host, int port )
         {
             sd->error = WSAGetLastError();
             closesocket( sd->sock );
+            sd->sock = -1;
             return 0;
         }
     }
